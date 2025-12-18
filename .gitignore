@@ -1,0 +1,4 @@
+# === Environment variables (VERY IMPORTANT) ===
+.env
+*.env
+.env.*
