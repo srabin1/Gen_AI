@@ -1,8 +1,15 @@
+import os
+from dotenv import load_dotenv
 from openai import OpenAI
+
+# Load environment variables
+load_dotenv()
+
+NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 
 client = OpenAI(
   base_url = "https://integrate.api.nvidia.com/v1",
-  api_key = "************"
+  api_key = NVIDIA_API_KEY
 )
 
 completion = client.chat.completions.create(
@@ -15,9 +22,16 @@ completion = client.chat.completions.create(
 )
 
 for chunk in completion:
-  reasoning = getattr(chunk.choices[0].delta, "reasoning_content", None)
-  if reasoning:
-    print(reasoning, end="")
-  if chunk.choices[0].delta.content is not None:
-    print(chunk.choices[0].delta.content, end="")
+    if not chunk.choices:
+        continue  # skip empty chunks safely
+
+    delta = chunk.choices[0].delta
+
+    reasoning = getattr(delta, "reasoning_content", None)
+    if reasoning:
+        print(reasoning, end="")
+
+    if delta.content:
+        print(delta.content, end="")
+
 
